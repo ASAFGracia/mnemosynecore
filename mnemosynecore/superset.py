@@ -1,5 +1,5 @@
 import requests
-from .vault import get_secret
+from mnemosynecore.vault.client import get_secret
 from superset_o3_api_lib import SupersetAPIClient
 import json
 import os

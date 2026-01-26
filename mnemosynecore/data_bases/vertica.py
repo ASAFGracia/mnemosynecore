@@ -5,7 +5,8 @@ from typing import List, Optional, Union
 import pandas as pd
 import vertica_python
 from sqlalchemy import create_engine
-from mnemosynecore.vault import get_secret
+from mnemosynecore.vault.client import get_secret
+from mnemosynecore.vault.univ_conn import un_conn
 HAS_AIRFLOW = False
 try:
     from airflow.operators.python import get_current_context
@@ -172,40 +173,23 @@ def vertica_upsert(
     print(f"Обновление таблицы {table_name} завершено. {len(df)} строк обработано.")
 
 
-def vertica_conn(conn_id: str) -> vertica_python.Connection:
-    cfg = get_secret(conn_id)
-
-    return vertica_python.connect(
-        host=cfg["host"],
-        port=int(cfg["port"]),
-        user=cfg["login"],
-        password=cfg["password"],
-        database=cfg.get("schema") or cfg.get("database"),
-        autocommit=False,
-    )
+def vertica_conn(conn_id: str):
+    return un_conn(conn_id, "vertica")
 
 
 def get_vertica_engine(conn_id: str):
-    cfg = json.loads(get_connection_as_json(conn_id))
-
-    vertica_url = (
-        f"vertica+vertica_python://{cfg['login']}:{cfg['password']}@"
-        f"{cfg['host']}:{cfg['port']}/{cfg['schema']}"
-    )
-
-    return create_engine(vertica_url, pool_pre_ping=True)
+    return un_conn(conn_id, "vertica_engine")
 
 
 def vertica_sql(
-        *,
-        conn_id: Optional[str] = None,
-        conn: Optional[vertica_python.Connection] = None,
-        sql: str,
-        params: Optional[Iterable[Any]] = None,
-        many: bool = False,
-        commit: bool = True,
-) -> None:
-
+    *,
+    conn_id: str = None,
+    conn: vertica_python.Connection = None,
+    sql: str,
+    params=None,
+    many: bool = False,
+    commit: bool = True
+):
     if not conn and not conn_id:
         raise ValueError("Нужно указать conn или conn_id")
 
@@ -234,14 +218,7 @@ def vertica_sql(
             conn.close()
 
 
-def vertica_select(
-        *,
-        conn_id: Optional[str] = None,
-        conn: Optional[vertica_python.Connection] = None,
-        sql: str,
-        params: Optional[Iterable[Any]] = None,
-) -> pd.DataFrame:
-
+def vertica_select(*, conn_id: str = None, conn=None, sql: str, params=None):
     if not conn and not conn_id:
         raise ValueError("Нужно указать conn или conn_id")
 
@@ -255,7 +232,7 @@ def vertica_select(
             cur.execute(sql, params)
             columns = [desc[0] for desc in cur.description]
             rows = cur.fetchall()
-
+        import pandas as pd
         return pd.DataFrame(rows, columns=columns)
 
     finally:

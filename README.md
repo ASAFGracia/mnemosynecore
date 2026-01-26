@@ -528,3 +528,24 @@ vertica_sql(
 )
 ```
 
+---
+
+### un_conn
+
+##### Использование Vertica
+
+```
+engine = un_conn("conn_id", "vertica")
+result = engine.execute("SELECT COUNT(*) FROM my_table")
+```
+
+##### Использование Mattermost
+
+```
+driver = un_conn("CBA_send_review", "mattermost")
+driver.posts.create_post({
+    "channel_id": "s5c11srqkf8j3pbdwfbn9imrde",
+    "message": "Привет, мир!"
+})
+```
+

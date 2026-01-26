@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: mnemosynecore
-Version: 1.0.1
+Version: 1.0.2
 Summary: Internal analytics toolkit for data pipelines
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
@@ -11,6 +11,7 @@ Requires-Dist: requests>=2.30
 Requires-Dist: python-dotenv>=1.2.1
 Requires-Dist: typing-extensions>=4.0.0
 Requires-Dist: superset_o3_api_lib>=1.0.0
+Requires-Dist: hvac>=2.4.0
 Provides-Extra: airflow
 Requires-Dist: apache-airflow<3.1,>=2.6; extra == "airflow"
 Requires-Dist: apache-airflow-providers-postgres>=5.0; extra == "airflow"
@@ -545,5 +546,26 @@ vertica_sql(
     conn_id="VERTICA_CONN",
     sql="DELETE FROM my_table WHERE dt < CURRENT_DATE - 30"
 )
+```
+
+---
+
+### un_conn
+
+##### Использование Vertica
+
+```
+engine = un_conn("conn_id", "vertica")
+result = engine.execute("SELECT COUNT(*) FROM my_table")
+```
+
+##### Использование Mattermost
+
+```
+driver = un_conn("CBA_send_review", "mattermost")
+driver.posts.create_post({
+    "channel_id": "s5c11srqkf8j3pbdwfbn9imrde",
+    "message": "Привет, мир!"
+})
 ```
 

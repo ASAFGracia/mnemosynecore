@@ -1,5 +1,5 @@
 from typing import Dict, Optional
-from mnemosynecore.vault import get_secret, get_secret_test
+from mnemosynecore.vault.client import get_secret, get_secret_test
 
 
 def resolve_secret(
