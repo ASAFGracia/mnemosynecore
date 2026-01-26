@@ -1,6 +1,6 @@
 [project]
 name = "mnemosynecore"
-version = "0.1.12"
+version = "1.0.1"
 description = "Internal analytics toolkit for data pipelines"
 readme = "README.md"
 requires-python = ">=3.10"
