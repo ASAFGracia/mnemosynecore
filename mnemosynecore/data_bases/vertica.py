@@ -7,16 +7,24 @@ import vertica_python
 from sqlalchemy import create_engine
 from mnemosynecore.vault.client import get_secret
 from mnemosynecore.vault.univ_conn import un_conn
+from os import listdir, path
 HAS_AIRFLOW = False
 try:
     from airflow.operators.python import get_current_context
     from airflow import DAG
     from airflow.utils.task_group import TaskGroup
     from airflow.operators.dummy import DummyOperator
-    from os import listdir, path
     HAS_AIRFLOW = True
 except ImportError:
     pass
+
+
+def read_sql_file(file_path: str):
+    if not path.exists(file_path):
+        print('Error: no file ' + file_path)
+        return None
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return f.read()
 
 
 def load_sql_tasks_from_dir(dir_sql: str, vertica_conn_id: str):
@@ -45,14 +53,6 @@ def load_sql_tasks_from_dir(dir_sql: str, vertica_conn_id: str):
                 dag=dag,
             )
     return tasks
-
-
-def read_sql_file(file_path: str):
-    if not path.exists(file_path):
-        print('Error: no file ' + file_path)
-        return None
-    with open(file_path, 'r', encoding='utf-8') as f:
-        return f.read()
 
 
 def vertica_dedupe(

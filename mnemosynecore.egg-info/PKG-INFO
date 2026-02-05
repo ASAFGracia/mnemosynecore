@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: mnemosynecore
-Version: 1.0.2
+Version: 1.0.3
 Summary: Internal analytics toolkit for data pipelines
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
